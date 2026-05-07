@@ -1,0 +1,110 @@
+{
+  "entities": {
+    "LinkedApp": {
+      "title": "Linked Website",
+      "description": "Represents a website linked to the agency portal",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "url": { "type": "string", "format": "uri" },
+        "adminEmail": { "type": "string", "format": "email" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["name", "url", "adminEmail", "createdAt"]
+    },
+    "VaultItem": {
+      "title": "Vault Item",
+      "description": "An asset (repo, design, credential) tied to a linked app",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "type": { "type": "string", "enum": ["Website", "Repository", "Design", "Credentials"] },
+        "tags": { "type": "array", "items": { "type": "string" } },
+        "linkedAppUrl": { "type": "string" },
+        "icon": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["title", "type", "linkedAppUrl", "createdAt"]
+    },
+    "Project": {
+      "title": "Agency Project",
+      "description": "A project managed by the agency",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "client": { "type": "string" },
+        "status": { "type": "string", "enum": ["planning", "in-progress", "review", "delivered"] },
+        "progress": { "type": "number" },
+        "due": { "type": "string" },
+        "url": { "type": "string", "format": "uri" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["name", "client", "status", "progress", "createdAt"]
+    },
+    "Task": {
+      "title": "Project Task",
+      "description": "A specific unit of work",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "projectId": { "type": "string" },
+        "projectName": { "type": "string" },
+        "priority": { "type": "string", "enum": ["urgent", "high", "normal"] },
+        "time": { "type": "string" },
+        "completed": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["title", "priority", "completed", "createdAt"]
+    },
+    "Activity": {
+      "title": "Agency Activity",
+      "description": "A notable event or action in the agency",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "type": { "type": "string", "enum": ["system", "human", "ai"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["title", "description", "type", "createdAt"]
+    },
+    "RevenueRecord": {
+      "title": "Revenue Record",
+      "description": "Financial record for revenue scaling tracking",
+      "type": "object",
+      "properties": {
+        "month": { "type": "string" },
+        "amount": { "type": "number" },
+        "year": { "type": "number" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["month", "amount", "year", "createdAt"]
+    }
+  },
+  "firestore": {
+    "linkedApps/{appId}": {
+      "schema": "LinkedApp",
+      "description": "Global list of apps linked by the agency"
+    },
+    "vaultItems/{itemId}": {
+      "schema": "VaultItem",
+      "description": "Assets belonging to specific apps"
+    },
+    "projects/{projectId}": {
+      "schema": "Project",
+      "description": "Active agency projects"
+    },
+    "tasks/{taskId}": {
+      "schema": "Task",
+      "description": "Work items for the team"
+    },
+    "activities/{activityId}": {
+      "schema": "Activity",
+      "description": "Manual log of agency events"
+    },
+    "revenueData/{revenueId}": {
+      "schema": "RevenueRecord",
+      "description": "Monthly financial data entries"
+    }
+  }
+}
