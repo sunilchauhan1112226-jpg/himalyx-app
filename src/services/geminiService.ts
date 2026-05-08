@@ -11,7 +11,7 @@ function getAiClient() {
       console.error("CRITICAL: GEMINI_API_KEY is missing or empty.");
       return null;
     }
-    aiClient = new GoogleGenAI(apiKey);
+    aiClient = new GoogleGenAI({ apiKey });
   }
   return aiClient;
 }
@@ -103,12 +103,13 @@ export async function getHimalyxDeepInsights(tasks: any[], projects: any[], link
     const ai = getAiClient();
     if (!ai) throw new Error("API_KEY_MISSING");
 
-    const model = ai.getGenerativeModel({ model: "gemini-1.5-flash" });
-    const result = await model.generateContent(prompt);
-    const text = result.response.text();
+    const response = await ai.models.generateContent({
+      model: "gemini-3-flash-preview",
+      contents: prompt,
+    });
 
     return {
-      insight: text || "HIMALYX AI is synchronized.",
+      insight: response.text || "HIMALYX AI is synchronized.",
       score: Math.round(completionRate)
     };
   } catch (error) {
@@ -132,7 +133,7 @@ export async function askHimalyxStream(query: string, context: any, onChunk: (te
       - VAULT ASSETS: ${JSON.stringify(context.vaultItems || [])}
       
       STATISTICS:
-      - Task Completion: ${((context.tasks?.filter((t: any) => t.completed).length / context.tasks?.length) * 100 || 0).toFixed(1)}%
+      - Task Completion: ${((context.tasks?.filter((t: any) => t.completed).length / (context.tasks?.length || 1)) * 100 || 0).toFixed(1)}%
       
       YOUR CAPABILITIES:
       1. ANALYZE: Full cross-referencing of Sunil's agency data.
@@ -151,16 +152,17 @@ export async function askHimalyxStream(query: string, context: any, onChunk: (te
     const ai = getAiClient();
     if (!ai) throw new Error("API_KEY_MISSING");
 
-    const model = ai.getGenerativeModel({ 
-      model: "gemini-1.5-flash",
-      tools: [{ functionDeclarations: [createTaskTool, deleteResultTool, createProjectTool, recordRevenueTool] }]
+    const response = await ai.models.generateContentStream({
+      model: "gemini-3-flash-preview",
+      contents: prompt,
+      config: {
+        tools: [{ functionDeclarations: [createTaskTool, deleteResultTool, createProjectTool, recordRevenueTool] }]
+      }
     });
 
-    const result = await model.generateContentStream(prompt);
-
     let fullText = "";
-    for await (const chunk of result.stream) {
-      const calls = chunk.functionCalls();
+    for await (const chunk of response) {
+      const calls = chunk.functionCalls;
       if (calls && calls.length > 0) {
         for (const call of calls) {
           if (call.name === "create_task") {
@@ -199,7 +201,7 @@ export async function askHimalyxStream(query: string, context: any, onChunk: (te
         return;
       }
 
-      const chunkText = chunk.text();
+      const chunkText = chunk.text;
       if (chunkText) {
         fullText += chunkText;
         onChunk(fullText);
