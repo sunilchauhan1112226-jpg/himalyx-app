@@ -7,11 +7,11 @@ let aiClient: GoogleGenAI | null = null;
 function getAiClient() {
   if (!aiClient) {
     const apiKey = process.env.GEMINI_API_KEY;
-    if (!apiKey) {
-      console.warn("GEMINI_API_KEY is missing. HIMALYX AI is in standby mode.");
-      // Return a dummy client or just fall through to handle null
+    if (!apiKey || apiKey.trim() === "") {
+      console.error("CRITICAL: GEMINI_API_KEY is missing or empty.");
+      return null;
     }
-    aiClient = new GoogleGenAI({ apiKey: apiKey || "" });
+    aiClient = new GoogleGenAI(apiKey);
   }
   return aiClient;
 }
@@ -100,14 +100,15 @@ export async function getHimalyxDeepInsights(tasks: any[], projects: any[], link
       Example: "With Rs.${totalRevenue.toLocaleString()} in project value across ${activeProjects} active engagements, your agency is scaling efficiently; prioritize the ${totalTasks - completedTasks} pending tasks to unlock next-tier revenue."
     `;
 
-    const client = getAiClient();
-    const response = await client.models.generateContent({
-      model: "gemini-2.0-flash",
-      contents: prompt,
-    });
+    const ai = getAiClient();
+    if (!ai) throw new Error("API_KEY_MISSING");
+
+    const model = ai.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const result = await model.generateContent(prompt);
+    const text = result.response.text();
 
     return {
-      insight: response.text || "HIMALYX AI is synchronized.",
+      insight: text || "HIMALYX AI is synchronized.",
       score: Math.round(completionRate)
     };
   } catch (error) {
@@ -147,20 +148,20 @@ export async function askHimalyxStream(query: string, context: any, onChunk: (te
       - Character: Efficient, powerful, senior partner.
     `;
 
-    const client = getAiClient();
-    const response = await client.models.generateContentStream({
-      model: "gemini-2.0-flash",
-      contents: prompt,
-      config: {
-        tools: [{ functionDeclarations: [createTaskTool, deleteResultTool, createProjectTool, recordRevenueTool] }]
-      }
+    const ai = getAiClient();
+    if (!ai) throw new Error("API_KEY_MISSING");
+
+    const model = ai.getGenerativeModel({ 
+      model: "gemini-1.5-flash",
+      tools: [{ functionDeclarations: [createTaskTool, deleteResultTool, createProjectTool, recordRevenueTool] }]
     });
 
+    const result = await model.generateContentStream(prompt);
+
     let fullText = "";
-    for await (const chunk of response) {
-      // Check for tool calls in the stream
-      const calls = chunk.functionCalls;
-      if (calls) {
+    for await (const chunk of result.stream) {
+      const calls = chunk.functionCalls();
+      if (calls && calls.length > 0) {
         for (const call of calls) {
           if (call.name === "create_task") {
             const { title, priority } = call.args as any;
@@ -198,7 +199,7 @@ export async function askHimalyxStream(query: string, context: any, onChunk: (te
         return;
       }
 
-      const chunkText = chunk.text;
+      const chunkText = chunk.text();
       if (chunkText) {
         fullText += chunkText;
         onChunk(fullText);

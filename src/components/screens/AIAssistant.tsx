@@ -76,15 +76,15 @@ export const AIAssistant: React.FC = () => {
       await askHimalyxStream(currentQuery, contextRef.current, (text) => {
         setMessages(prev => prev.map(m => m.id === aiMessageId ? { ...m, content: text } : m));
       });
-    } catch (err) {
+    } catch (err: any) {
       console.error("AI Error:", err);
-      const errorMsg: Message = {
-        id: Date.now().toString(),
-        role: 'assistant',
-        content: "I've encountered a neural drift. Please re-synchronize.",
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-      };
-      setMessages(prev => [...prev, errorMsg]);
+      let errorMessage = "I've encountered a neural drift. Please re-synchronize.";
+      
+      if (err.message === "API_KEY_MISSING") {
+        errorMessage = "HIMALYX AI Error: GEMINI_API_KEY is missing. Please check your system settings or Vercel environment variables.";
+      }
+
+      setMessages(prev => prev.map(m => m.id === aiMessageId ? { ...m, content: errorMessage } : m));
     } finally {
       setIsTyping(false);
     }
