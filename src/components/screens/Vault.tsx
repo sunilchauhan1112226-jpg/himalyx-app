@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { Shield, Search, Globe, Code, Figma, Key, Plus, ExternalLink, Copy, Share2, Link as LinkIcon, Lock, CheckCircle2, AlertCircle, Zap, Trash2 } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { auth, db, googleProvider, ADMIN_EMAIL } from '../../lib/firebase';

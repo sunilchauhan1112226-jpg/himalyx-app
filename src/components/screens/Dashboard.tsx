@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { Sparkles, ArrowRight, Activity, Zap, DollarSign, Plus, X, Globe, Link, Briefcase, ExternalLink, Clock, Trash2 } from 'lucide-react';
 import { db, auth } from '../../lib/firebase';
 import { collection, query, limit, onSnapshot, orderBy, addDoc, serverTimestamp, deleteDoc, doc } from 'firebase/firestore';

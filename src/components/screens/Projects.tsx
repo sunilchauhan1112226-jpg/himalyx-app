@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { ChevronDown, Calendar, Layers, CheckCircle2, Clock, PlayCircle, Plus, Trash2, ExternalLink, Globe } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { db } from '../../lib/firebase';

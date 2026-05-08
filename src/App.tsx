@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { SplashScreen } from './components/SplashScreen';
 import { Dashboard } from './components/screens/Dashboard';
 import { Projects } from './components/screens/Projects';

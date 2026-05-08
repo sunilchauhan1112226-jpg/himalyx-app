@@ -2,7 +2,19 @@ import { GoogleGenAI, Type, FunctionDeclaration } from "@google/genai";
 import { db } from "../lib/firebase";
 import { collection, addDoc, deleteDoc, doc, serverTimestamp } from "firebase/firestore";
 
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+let aiClient: GoogleGenAI | null = null;
+
+function getAiClient() {
+  if (!aiClient) {
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey) {
+      console.warn("GEMINI_API_KEY is missing. HIMALYX AI is in standby mode.");
+      // Return a dummy client or just fall through to handle null
+    }
+    aiClient = new GoogleGenAI({ apiKey: apiKey || "" });
+  }
+  return aiClient;
+}
 
 // Tool Definitions
 const createTaskTool: FunctionDeclaration = {
@@ -88,7 +100,8 @@ export async function getHimalyxDeepInsights(tasks: any[], projects: any[], link
       Example: "With Rs.${totalRevenue.toLocaleString()} in project value across ${activeProjects} active engagements, your agency is scaling efficiently; prioritize the ${totalTasks - completedTasks} pending tasks to unlock next-tier revenue."
     `;
 
-    const response = await ai.models.generateContent({
+    const client = getAiClient();
+    const response = await client.models.generateContent({
       model: "gemini-2.0-flash",
       contents: prompt,
     });
@@ -134,7 +147,8 @@ export async function askHimalyxStream(query: string, context: any, onChunk: (te
       - Character: Efficient, powerful, senior partner.
     `;
 
-    const response = await ai.models.generateContentStream({
+    const client = getAiClient();
+    const response = await client.models.generateContentStream({
       model: "gemini-2.0-flash",
       contents: prompt,
       config: {
