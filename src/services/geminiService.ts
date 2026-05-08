@@ -90,7 +90,7 @@ export async function getHimalyxDeepInsights(tasks: any[], projects: any[], link
     if (!ai) throw new Error("API_KEY_MISSING");
 
     const response = await ai.models.generateContent({
-      model: "gemini-3-flash-preview",
+      model: "gemini-1.5-flash",
       contents: prompt,
     });
 
@@ -120,7 +120,7 @@ export async function askHimalyxStream(query: string, context: any, onChunk: (te
     if (!ai) throw new Error("API_KEY_MISSING");
 
     const response = await ai.models.generateContentStream({
-      model: "gemini-3-flash-preview",
+      model: "gemini-1.5-flash",
       contents: prompt,
       config: {
         tools: [{ functionDeclarations: [createTaskTool, deleteEntityTool, createProjectTool, recordRevenueTool] }]
@@ -129,8 +129,8 @@ export async function askHimalyxStream(query: string, context: any, onChunk: (te
 
     let fullText = "";
     for await (const chunk of response) {
-      // Access functionCalls directly from chunk
-      const calls = chunk.functionCalls;
+      // Use helper to get function calls safely
+      const calls = chunk.functionCalls || (typeof (chunk as any).functionCalls === 'function' ? (chunk as any).functionCalls() : null);
       
       if (calls && calls.length > 0) {
         console.log("HIMALYX AI executing tools:", calls);
@@ -166,12 +166,13 @@ export async function askHimalyxStream(query: string, context: any, onChunk: (te
                 createdAt: serverTimestamp()
               });
             }
-          } catch (fireErr) {
+          } catch (fireErr: any) {
             console.error("Firestore operation failed:", fireErr);
-            throw fireErr; // Re-throw to be caught by outer catch
+            onChunk(`Neural op blocked: ${fireErr.message}`);
+            return;
           }
         }
-        onChunk(`Neural operation successful. Dashboard synchronized.`);
+        onChunk(`Neural synchronization successful. Dashboard operation initialized.`);
         return;
       }
 

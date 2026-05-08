@@ -19,14 +19,16 @@ export const Login: React.FC<LoginProps> = ({ onLogin }) => {
       await signInWithPopup(auth, googleProvider);
       onLogin?.();
     } catch (err: any) {
-      console.error("Login failed:", err);
-      // Handle the case where the popup was blocked by the browser
+      console.error("Neural Sync Failure:", err);
+      // Handle details for debugging
       if (err.code === 'auth/popup-blocked') {
-        setError("Neural Link Blocked: Please enable popups or open the app in a new window/tab.");
+        setError("Neural Link Blocked: The browser prevented the identification window. Please enable popups for this site.");
       } else if (err.code === 'auth/cancelled-popup-request' || err.code === 'auth/popup-closed-by-user') {
-        setError("Synchronization Cancelled. Ready for re-auth.");
+        setError("Synchronization Interrupted: The login window was closed before completion.");
+      } else if (err.code === 'auth/unauthorized-domain') {
+        setError("Unauthorized Domain: Please add this URL to your Firebase Authorized Domains in settings.");
       } else {
-        setError("Neural synchronization failed. Please check your connection.");
+        setError(`Neural Sync Error: ${err.message || "Connection lost during synchronization."}`);
       }
     } finally {
       setLoading(false);
