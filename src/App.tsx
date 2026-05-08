@@ -74,15 +74,6 @@ export default function App() {
             transition={{ duration: 0.8 }}
             className="flex-1 flex flex-col relative z-10"
           >
-            {/* Status Bar Mockup (Internal) */}
-            <div className="sticky top-0 left-0 right-0 h-10 flex justify-between items-center px-10 z-40 bg-gradient-to-b from-[#0A0A0B] to-transparent pointer-events-none">
-               <span className="text-[10px] font-semibold text-white/50 tabular-nums">9:41</span>
-               <div className="flex gap-1.5 items-center">
-                  <div className="w-3 h-3 border border-white/20 rounded-sm" />
-                  <div className="w-3 h-3 border border-white/20 rounded-sm" />
-               </div>
-            </div>
-
             {/* Scrollable Content */}
             <div className="flex-1 overflow-y-visible">
               <AnimatePresence mode="wait">
