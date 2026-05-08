@@ -6,6 +6,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { SplashScreen } from './components/SplashScreen';
+import { Login } from './components/Login';
 import { Dashboard } from './components/screens/Dashboard';
 import { Projects } from './components/screens/Projects';
 import { Vault } from './components/screens/Vault';
@@ -14,10 +15,22 @@ import { AIAssistant } from './components/screens/AIAssistant';
 import { Analytics } from './components/screens/Analytics';
 import { BottomNav } from './components/BottomNav';
 import { BarChart3 } from 'lucide-react';
+import { auth } from './lib/firebase';
+import { onAuthStateChanged, User } from 'firebase/auth';
 
 export default function App() {
   const [showSplash, setShowSplash] = useState(true);
   const [activeTab, setActiveTab] = useState('home');
+  const [user, setUser] = useState<User | null>(null);
+  const [authLoading, setAuthLoading] = useState(true);
+
+  useEffect(() => {
+    const unsub = onAuthStateChanged(auth, (u) => {
+      setUser(u);
+      setAuthLoading(false);
+    });
+    return () => unsub();
+  }, []);
 
   const renderScreen = () => {
     switch (activeTab) {
@@ -30,6 +43,12 @@ export default function App() {
       default: return <Dashboard />;
     }
   };
+
+  if (authLoading) return <div className="min-h-screen bg-[#0A0A0B]" />;
+
+  if (!user && !showSplash) {
+    return <Login onLogin={() => {}} />;
+  }
 
   return (
     <div className="min-h-[100dvh] bg-[#0A0A0B] flex flex-col selection:bg-[#00D4FF]/30 selection:text-[#00D4FF] relative overflow-x-hidden">
