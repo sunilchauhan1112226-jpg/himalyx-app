@@ -90,7 +90,7 @@ export async function getHimalyxDeepInsights(tasks: any[], projects: any[], link
     if (!ai) throw new Error("API_KEY_MISSING");
 
     const response = await ai.models.generateContent({
-      model: "gemini-1.5-flash",
+      model: "gemini-3-flash-preview",
       contents: prompt,
     });
 
@@ -120,7 +120,7 @@ export async function askHimalyxStream(query: string, context: any, onChunk: (te
     if (!ai) throw new Error("API_KEY_MISSING");
 
     const response = await ai.models.generateContentStream({
-      model: "gemini-1.5-flash",
+      model: "gemini-3-flash-preview",
       contents: prompt,
       config: {
         tools: [{ functionDeclarations: [createTaskTool, deleteEntityTool, createProjectTool, recordRevenueTool] }]
@@ -129,8 +129,7 @@ export async function askHimalyxStream(query: string, context: any, onChunk: (te
 
     let fullText = "";
     for await (const chunk of response) {
-      // Use helper to get function calls safely
-      const calls = chunk.functionCalls || (typeof (chunk as any).functionCalls === 'function' ? (chunk as any).functionCalls() : null);
+      const calls = chunk.functionCalls;
       
       if (calls && calls.length > 0) {
         console.log("HIMALYX AI executing tools:", calls);
@@ -187,7 +186,9 @@ export async function askHimalyxStream(query: string, context: any, onChunk: (te
   } catch (err: any) {
     console.error("HIMALYX SDK Error:", err);
     let errorMsg = "I'm having trouble accessing the neural link. Please try again.";
-    if (err.message?.includes("permission")) {
+    if (err.message?.includes("API_KEY_INVALID") || err.message?.includes("API_KEY_MISSING")) {
+      errorMsg = "Neural Failure: Missing or Invalid API Key. Please ensure GEMINI_API_KEY is correctly set in your environment variables.";
+    } else if (err.message?.includes("permission")) {
       errorMsg = "Authentication Required: Please ensure you are logged in as Sunil to modify data.";
     }
     onChunk(errorMsg);
