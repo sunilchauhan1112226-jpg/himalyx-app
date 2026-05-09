@@ -260,15 +260,15 @@ export const Vault: React.FC = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[60] bg-[#0A0A0B]/90 backdrop-blur-xl flex items-end justify-center p-6"
+            className="fixed inset-0 z-[60] bg-[#0A0A0B]/95 flex items-end justify-center p-6"
             onClick={() => setIsLinking(false)}
           >
             <motion.div
               initial={{ y: "100%" }}
               animate={{ y: 0 }}
               exit={{ y: "100%" }}
-              transition={{ type: "spring", damping: 25, stiffness: 200 }}
-              className="w-full max-w-[400px] glass-card p-8 bg-[#111113] border-white/10 shadow-[0_-20px_50px_rgba(0,0,0,0.5)]"
+              transition={{ type: "spring", damping: 30, stiffness: 300 }}
+              className="w-full max-w-[400px] bg-[#111113] p-8 border border-white/10 shadow-2xl rounded-t-3xl"
               onClick={e => e.stopPropagation()}
             >
               <div className="flex flex-col items-center text-center gap-6">
@@ -364,7 +364,7 @@ export const Vault: React.FC = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[60] bg-[#0A0A0B]/95 backdrop-blur-2xl flex flex-col p-6 overflow-y-auto pt-20"
+            className="fixed inset-0 z-[60] bg-[#0A0A0B] flex flex-col p-6 overflow-y-auto pt-20"
           >
             <div className="max-w-[400px] mx-auto w-full space-y-8">
               <header className="flex justify-between items-start">

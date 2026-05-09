@@ -69,7 +69,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
           />
           <div className="absolute inset-0 rounded-full border-2 border-dashed border-[#00D4FF]/40 animate-orbit" />
           <div className="absolute inset-2 rounded-full bg-gradient-to-tr from-[#00D4FF] to-[#0055FF] flex items-center justify-center overflow-hidden shadow-[0_0_30px_rgba(0,212,255,0.4)]">
-            <div className="w-full h-full bg-white/10 backdrop-blur-sm" />
+            <div className="w-full h-full bg-black/20" />
           </div>
         </div>
 

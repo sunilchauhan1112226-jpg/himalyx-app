@@ -141,25 +141,15 @@ export const AIAssistant: React.FC = () => {
         </div>
       </header>
 
-      {/* Main Orb Area */}
       <div className="flex flex-col items-center justify-center mb-8">
         <div className="relative w-32 h-32 flex items-center justify-center">
-          <motion.div
-            animate={{ 
-              scale: [1, 1.2, 1],
-              rotate: 360,
-              borderRadius: ["50% 50% 50% 50%", "40% 60% 60% 40%", "50% 50% 50% 50%"]
-            }}
-            transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
-            className="absolute inset-0 bg-gradient-to-tr from-[#00D4FF] via-[#0055FF] to-[#00D4FF] opacity-30 blur-2xl"
-          />
-          <div className="relative w-28 h-28 rounded-full border border-dashed border-[#00D4FF]/30 animate-spin-slow" />
-          <div className="absolute inset-2 bg-gradient-to-tr from-[#00D4FF] to-[#0055FF] rounded-full flex items-center justify-center shadow-[0_0_60px_rgba(0,212,255,0.5)] overflow-hidden group">
-             <div className="w-full h-full bg-white/10 backdrop-blur-3xl animate-pulse-glow" />
-             <Sparkles size={40} className="absolute text-white drop-shadow-[0_0_15px_white] animate-bounce" />
+          {/* Hardware Optimized Orb */}
+          <div className="absolute inset-0 bg-[#00D4FF]/20 rounded-full animate-pulse" />
+          <div className="relative w-28 h-28 rounded-full border border-[#00D4FF]/20 flex items-center justify-center bg-[#1A1A1D]/10">
+             <Sparkles size={40} className="text-[#00D4FF] drop-shadow-[0_0_10px_#00D4FF]" />
           </div>
         </div>
-        <p className="mt-6 text-zinc-600 text-[9px] font-bold uppercase tracking-[0.4em] animate-pulse">Synchronizing Data Streams</p>
+        <p className="mt-6 text-zinc-600 text-[9px] font-bold uppercase tracking-[0.4em]">Synchronizing Data Streams</p>
       </div>
 
 

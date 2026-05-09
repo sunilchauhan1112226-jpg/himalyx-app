@@ -15,14 +15,21 @@ export const Login: React.FC<LoginProps> = ({ onLogin }) => {
   // Check for redirect results on mount
   React.useEffect(() => {
     const checkRedirect = async () => {
+      setLoading(true);
       try {
         const result = await getRedirectResult(auth);
         if (result) {
           onLogin?.();
         }
       } catch (err: any) {
-        console.error("Redirect Error:", err);
-        setError("Neural link recovery failed. Please try again.");
+        console.error("Neural Redirect Sync Failure:", err);
+        if (err.code === 'auth/unauthorized-domain') {
+          setError("Authorized Domain Required: Please add the Vercel URL to your Firebase Console settings.");
+        } else {
+          setError(`Sync Link Broken: ${err.message || "Please refresh and try again."}`);
+        }
+      } finally {
+        setLoading(false);
       }
     };
     checkRedirect();
