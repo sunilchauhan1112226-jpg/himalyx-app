@@ -141,10 +141,10 @@ export const Tasks: React.FC = () => {
            </div>
         </div>
         
-        {/* Subtle background glow */}
+        {/* Subtle background glow - hardware optimized */}
         <div className={cn(
-          "absolute inset-0 bg-[#00D4FF] transition-opacity duration-1000 -z-0 blur-[100px]",
-          isActive ? "opacity-10" : "opacity-0"
+          "absolute inset-0 bg-[#00D4FF]/5 transition-opacity duration-1000 -z-0",
+          isActive ? "opacity-100" : "opacity-0"
         )} />
       </div>
 
@@ -190,7 +190,7 @@ export const Tasks: React.FC = () => {
       <div className="fixed bottom-32 left-6 right-6 z-40">
         <form 
           onSubmit={(e) => { e.preventDefault(); handleAddTask(); }}
-          className="glass-card h-14 bg-white/[0.03] backdrop-blur-2xl px-4 flex items-center gap-3 border-[#00D4FF]/20 shadow-[0_10px_30px_rgba(0,0,0,0.5)]"
+          className="glass-card h-14 bg-[#1A1A1D] px-4 flex items-center gap-3 border-[#00D4FF]/20 shadow-xl"
         >
            <div className="w-5 h-5 rounded-full border-2 border-zinc-700" />
            <input 

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion } from 'motion/react';
 import { LogIn, Sparkles, Loader2, AlertCircle } from 'lucide-react';
 import { auth, googleProvider } from '../lib/firebase';
-import { signInWithPopup } from 'firebase/auth';
+import { signInWithPopup, signInWithRedirect, getRedirectResult } from 'firebase/auth';
 
 interface LoginProps {
   onLogin?: () => void;
@@ -12,12 +12,37 @@ export const Login: React.FC<LoginProps> = ({ onLogin }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Check for redirect results on mount
+  React.useEffect(() => {
+    const checkRedirect = async () => {
+      try {
+        const result = await getRedirectResult(auth);
+        if (result) {
+          onLogin?.();
+        }
+      } catch (err: any) {
+        console.error("Redirect Error:", err);
+        setError("Neural link recovery failed. Please try again.");
+      }
+    };
+    checkRedirect();
+  }, [onLogin]);
+
   const handleLogin = async () => {
     setLoading(true);
     setError(null);
+    
+    // Check if we are in a mobile/embedded environment
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    
     try {
-      await signInWithPopup(auth, googleProvider);
-      onLogin?.();
+      if (isMobile) {
+        // Redirect is much more stable for mobile wrappers like Median.co
+        await signInWithRedirect(auth, googleProvider);
+      } else {
+        await signInWithPopup(auth, googleProvider);
+        onLogin?.();
+      }
     } catch (err: any) {
       console.error("Neural Sync Failure:", err);
       // Handle details for debugging
@@ -37,14 +62,14 @@ export const Login: React.FC<LoginProps> = ({ onLogin }) => {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-[#0A0A0B] p-6 relative overflow-hidden">
-      {/* Background Orbs */}
-      <div className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-[#00D4FF] opacity-10 rounded-full blur-[100px]" />
-      <div className="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-[#0055FF] opacity-5 rounded-full blur-[100px]" />
+      {/* Reduced background complexity for performance */}
+      <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-[#00D4FF]/5 to-transparent pointer-events-none" />
 
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="relative z-10 flex flex-col items-center text-center max-w-md"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5 }}
+        className="relative z-10 flex flex-col items-center text-center max-w-md w-full"
       >
         <div className="w-20 h-20 bg-gradient-to-tr from-[#00D4FF] to-[#0055FF] rounded-full flex items-center justify-center mb-8 shadow-[0_0_40px_rgba(0,212,255,0.3)]">
           <Sparkles size={40} className="text-white drop-shadow-[0_0_10px_white]" />

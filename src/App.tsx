@@ -52,10 +52,11 @@ export default function App() {
 
   return (
     <div className="min-h-[100dvh] bg-[#0A0A0B] flex flex-col selection:bg-[#00D4FF]/30 selection:text-[#00D4FF] relative overflow-x-hidden">
-      {/* Background Ambience merged into main layout */}
-      <div className="fixed top-[-100px] left-[-100px] w-[400px] h-[400px] bg-[#00D4FF] opacity-10 rounded-full blur-[120px] pointer-events-none z-0" />
-      <div className="fixed bottom-[-50px] right-[-50px] w-[300px] h-[300px] bg-[#00D4FF] opacity-5 rounded-full blur-[100px] pointer-events-none z-0" />
-      <div className="fixed inset-0 opacity-[0.1] bg-dot-pattern pointer-events-none z-0" />
+      {/* Optimized Background - No expensive blurs on mobile */}
+      <div className="fixed inset-0 pointer-events-none z-0">
+        <div className="absolute inset-0 bg-[#0A0A0B]" />
+        <div className="absolute top-0 inset-x-0 h-40 bg-gradient-to-b from-[#00D4FF]/5 to-transparent" />
+      </div>
 
       {/* Brand Text Accent in background (only on large screens) */}
       <div className="fixed right-[5%] top-[15%] text-right opacity-5 pointer-events-none hidden lg:block z-0">
